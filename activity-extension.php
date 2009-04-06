@@ -26,6 +26,11 @@ class ActivityExtension {
   function addActivityNamespace() {
     echo 'xmlns:activity="http://activitystrea.ms/schema/1.0/"';
   }
+  
+  function getDomain() {
+    $url = parse_url(get_bloginfo('url'));
+    return $url['host'];
+  }
 
   /**
    * echos the activity verb and object for the wordpress entries
@@ -36,7 +41,7 @@ class ActivityExtension {
     <activity:object>
       <activity:object-type>http://activitystrea.ms/schema/1.0/blog-entry/</activity:object-type>
       <activity:object-type>http://activitystrea.ms/schema/1.0/article/</activity:object-type>
-      <id>id:activity:post:<?php the_id(); ?></id>
+      <id>tag:<?php echo self::getDomain(); ?>,<?php echo get_post_modified_time('Y-m-d', true); ?>:/post/<?php the_id(); ?></id>
       <title type="<?php html_type_rss(); ?>"><![CDATA[<?php the_author() ?> posted a new blog-entry]]></title>
       <link rel="alternate" type="text/html" href="<?php the_permalink_rss() ?>" />
     </activity:object>
@@ -50,7 +55,7 @@ class ActivityExtension {
 ?>
     <activity:verb>http://activitystrea.ms/schema/1.0/post/</activity:verb>
     <activity:object>
-      <id>id:activity:comment:<?php comment_id(); ?></id>
+      <id>tag:<?php echo self::getDomain(); ?>,<?php echo get_post_modified_time('Y-m-d', true); ?>:/comment/<?php comment_id(); ?></id>
       <title type="<?php html_type_rss(); ?>"><![CDATA[<?php comment_author_rss() ?> posted a comment]]></title>
       <link rel="alternate" type="text/html" href="<?php comment_link() ?>" />
       <thr:in-reply-to ref="<?php the_guid() ?>" href="<?php the_permalink_rss() ?>" type="<?php bloginfo_rss('html_type'); ?>" />
