@@ -8,8 +8,6 @@ Stable tag: 0.1
 
 An extensions which adds the ActivityStream ([activitystrea.ms](http://www.activitystrea.ms)) syntax to your Atom-Feed
 
-You can find a demo file here: [notizBlog.org/apml/](http://notizblog.org/apml/).
-
 == Installation ==
 
 * Upload the whole folder to your `wp-content/plugins` folder
