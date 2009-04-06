@@ -4,7 +4,7 @@ Plugin Name: ActivityStream extension
 Plugin URI: 
 Description: An extensions which adds the ActivityStream (<a href="http://www.activitystrea.ms">activitystrea.ms</a>) syntax to your Atom-Feed
 Author: Matthias Pfefferle
-Version: 0.1
+Version: 0.2
 Author URI: http://notizblog.org
 */
 
