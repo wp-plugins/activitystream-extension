@@ -1,4 +1,4 @@
-=== Plugin Name ===
+=== ActivityStream extension ===
 Contributors: pfefferle
 Donate link: http://notizblog.org
 Tags: Activities, Activity Stream, Feed, RSS, Atom
