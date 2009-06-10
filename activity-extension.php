@@ -1,10 +1,10 @@
 <?php
 /*
 Plugin Name: ActivityStream extension
-Plugin URI: 
+Plugin URI:
 Description: An extensions which adds the ActivityStream (<a href="http://www.activitystrea.ms">activitystrea.ms</a>) syntax to your Atom-Feed
 Author: Matthias Pfefferle
-Version: 0.2
+Version: 0.2.1
 Author URI: http://notizblog.org
 */
 
@@ -19,14 +19,14 @@ if (isset($wp_version)) {
  *
  */
 class ActivityExtension {
-  
+
   /**
    * echos the activitystream namespace
    */
   function addActivityNamespace() {
-    echo 'xmlns:activity="http://activitystrea.ms/schema/1.0/"';
+    echo 'xmlns:activity="http://activitystrea.ms/schema/1.0"';
   }
-  
+
   function getDomain() {
     $url = parse_url(get_bloginfo('url'));
     return $url['host'];
@@ -37,23 +37,23 @@ class ActivityExtension {
    */
   function addActivityObject() {
 ?>
-    <activity:verb>http://activitystrea.ms/schema/1.0/post/</activity:verb>
+    <activity:verb>http://activitystrea.ms/schema/1.0/post</activity:verb>
     <activity:object>
-      <activity:object-type>http://activitystrea.ms/schema/1.0/blog-entry/</activity:object-type>
-      <activity:object-type>http://activitystrea.ms/schema/1.0/article/</activity:object-type>
+      <activity:object-type>http://activitystrea.ms/schema/1.0/blog-entry</activity:object-type>
+      <activity:object-type>http://activitystrea.ms/schema/1.0/article</activity:object-type>
       <id>tag:<?php echo self::getDomain(); ?>,<?php echo get_post_modified_time('Y-m-d', true); ?>:/post/<?php the_id(); ?></id>
       <title type="<?php html_type_rss(); ?>"><![CDATA[<?php the_author() ?> posted a new blog-entry]]></title>
       <link rel="alternate" type="text/html" href="<?php the_permalink_rss() ?>" />
     </activity:object>
 <?php
   }
-  
+
   /**
    * echos the activity verb and object for the wordpress comments
    */
   function addCommentActivityObject() {
 ?>
-    <activity:verb>http://activitystrea.ms/schema/1.0/post/</activity:verb>
+    <activity:verb>http://activitystrea.ms/schema/1.0/post</activity:verb>
     <activity:object>
       <id>tag:<?php echo self::getDomain(); ?>,<?php echo get_post_modified_time('Y-m-d', true); ?>:/comment/<?php comment_id(); ?></id>
       <title type="<?php html_type_rss(); ?>"><![CDATA[<?php comment_author_rss() ?> posted a comment]]></title>
