@@ -4,7 +4,7 @@ Plugin Name: ActivityStream extension
 Plugin URI:
 Description: An extensions which adds the ActivityStream (<a href="http://www.activitystrea.ms">activitystrea.ms</a>) syntax to your Atom-Feed
 Author: Matthias Pfefferle
-Version: 0.2.1
+Version: 0.2.1.1
 Author URI: http://notizblog.org
 */
 
@@ -16,7 +16,9 @@ if (isset($wp_version)) {
 }
 
 /**
- *
+ * ActivityStream Extension
+ * 
+ * @author Matthias Pfefferle
  */
 class ActivityExtension {
 
@@ -24,7 +26,7 @@ class ActivityExtension {
    * echos the activitystream namespace
    */
   function addActivityNamespace() {
-    echo 'xmlns:activity="http://activitystrea.ms/schema/1.0"';
+    echo 'xmlns:activity="http://activitystrea.ms/schema/1.0"'." \n";
   }
 
   function getDomain() {
