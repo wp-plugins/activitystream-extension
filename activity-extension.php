@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: ActivityStream extension
-Plugin URI:
+Plugin URI: http://wordpress.org/extend/plugins/activitystream-extension/
 Description: An extensions which adds the ActivityStream (<a href="http://www.activitystrea.ms">activitystrea.ms</a>) syntax to your Atom-Feed
 Author: Matthias Pfefferle
 Version: 0.2.1.1
@@ -17,7 +17,7 @@ if (isset($wp_version)) {
 
 /**
  * ActivityStream Extension
- * 
+ *
  * @author Matthias Pfefferle
  */
 class ActivityExtension {
