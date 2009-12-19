@@ -1,23 +1,25 @@
 <?php
 /*
 Plugin Name: ActivityStream extension
-Plugin URI: http://wordpress.org/extend/plugins/activitystream-extension/
+Plugin URI:
 Description: An extensions which adds the ActivityStream (<a href="http://www.activitystrea.ms">activitystrea.ms</a>) syntax to your Atom-Feed
 Author: Matthias Pfefferle
-Version: 0.2.1.1
+Version: 0.2.2
 Author URI: http://notizblog.org
 */
 
 if (isset($wp_version)) {
   add_action('atom_ns', array('ActivityExtension', 'addActivityNamespace'));
   add_action('atom_entry', array('ActivityExtension', 'addActivityObject'));
+  add_action('atom_head', array('ActivityExtension', 'addActivityProvider'));
   add_action('comment_atom_ns', array('ActivityExtension', 'addActivityNamespace'));
   add_action('comment_atom_entry', array('ActivityExtension', 'addCommentActivityObject'));
+  add_action('comments_atom_head', array('ActivityExtension', 'addActivityProvider'));
 }
 
 /**
  * ActivityStream Extension
- *
+ * 
  * @author Matthias Pfefferle
  */
 class ActivityExtension {
@@ -27,6 +29,7 @@ class ActivityExtension {
    */
   function addActivityNamespace() {
     echo 'xmlns:activity="http://activitystrea.ms/schema/1.0"'." \n";
+    echo 'xmlns:service="http://activitystrea.ms/service-provider"'." \n";
   }
 
   function getDomain() {
@@ -49,6 +52,22 @@ class ActivityExtension {
     </activity:object>
 <?php
   }
+  
+  
+  /**
+   * echos the service provider
+   */
+  function addActivityProvider() {
+?>
+    <service:provider>
+      <name><?php bloginfo_rss('name'); wp_title_rss(); ?></name>
+      <icon><?php bloginfo_rss('home') ?>/favicon.ico</icon>
+      <uri><?php bloginfo_rss('home') ?></uri>
+    </service:provider>
+<?php
+  }
+  
+
 
   /**
    * echos the activity verb and object for the wordpress comments
@@ -57,11 +76,21 @@ class ActivityExtension {
 ?>
     <activity:verb>http://activitystrea.ms/schema/1.0/post</activity:verb>
     <activity:object>
+      <activity:object-type>http://activitystrea.ms/schema/1.0/comment</activity:object-type>
       <id>tag:<?php echo self::getDomain(); ?>,<?php echo get_post_modified_time('Y-m-d', true); ?>:/comment/<?php comment_id(); ?></id>
       <title type="<?php html_type_rss(); ?>"><![CDATA[<?php comment_author_rss() ?> posted a comment]]></title>
       <link rel="alternate" type="text/html" href="<?php comment_link() ?>" />
       <thr:in-reply-to ref="<?php the_guid() ?>" href="<?php the_permalink_rss() ?>" type="<?php bloginfo_rss('html_type'); ?>" />
     </activity:object>
+    <activity:target>
+      <activity:object-type>http://activitystrea.ms/schema/1.0/blog-entry</activity:object-type>
+      <activity:object-type>http://activitystrea.ms/schema/1.0/article</activity:object-type>
+      <id><?php the_guid(); ?></id>
+      <title><?php the_title() ?></title>
+      <link rel="alternate" type="text/html"
+            href="<?php the_permalink_rss() ?>" />
+    </activity:target>
+
 <?php
   }
 }
