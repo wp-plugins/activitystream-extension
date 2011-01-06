@@ -1,10 +1,10 @@
 === ActivityStream extension ===
 Contributors: pfefferle
 Donate link: http://notizblog.org
-Tags: Activities, Activity Stream, Feed, RSS, Atom
+Tags: Activities, Activity Stream, Feed, RSS, Atom, OStatus, OStatus Stack
 Requires at least: 2.5
-Tested up to: 2.9.1
-Stable tag: 0.3
+Tested up to: 3.9
+Stable tag: 0.5
 
 An extensions which adds the ActivityStream ([activitystrea.ms](http://www.activitystrea.ms)) syntax to your Atom-Feed
 
@@ -39,6 +39,11 @@ Example:
 Thats it
 
 == Changelog ==
+
+= 0.5 =
+* some OStatus compatibility fixes
+* added <activity:subject>
+* added <activity:target>
 
 = 0.3 =
 * Fixed a namespace bug
