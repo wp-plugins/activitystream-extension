@@ -46,8 +46,8 @@ Thats it
 
 = 0.5 =
 * some OStatus compatibility fixes
-* added <activity:subject>
-* added <activity:target>
+* added `<activity:subject>`
+* added `<activity:target>`
 
 = 0.3 =
 * Fixed a namespace bug
