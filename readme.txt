@@ -6,6 +6,10 @@ Requires at least: 2.5
 Tested up to: 3.9
 Stable tag: 0.5
 
+ActivityStrea.ms syntax for the WordPress-feeds
+
+== Description ==
+
 An extensions which adds the ActivityStream ([activitystrea.ms](http://www.activitystrea.ms)) syntax to your Atom-Feed
 
 Example:
