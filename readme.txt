@@ -1,18 +1,18 @@
 === ActivityStream extension ===
 Contributors: pfefferle
 Donate link: http://notizblog.org
-Tags: Activities, Activity Stream, Feed, RSS, Atom, OStatus, OStatus Stack
+Tags: Activities, Activity Stream, Feed, RSS, Atom, OStatus, OStatus Stack, JSON
 Requires at least: 2.5
-Tested up to: 3.9
-Stable tag: 0.5
+Tested up to: 3.1
+Stable tag: 0.6
 
-ActivityStrea.ms syntax for the WordPress-feeds
+ActivityStrea.ms syntax for the WordPress (Atom and JSON)
 
 == Description ==
 
-An extensions which adds the ActivityStream ([activitystrea.ms](http://www.activitystrea.ms)) syntax to your Atom-Feed
+An extensions which ActivityStream ([activitystrea.ms](http://www.activitystrea.ms)) support to your WordPress-blog
 
-Example:
+Atom Example:
 
 ` <entry>
     <id>http://notizblog.org/?p=1775</id>
@@ -34,6 +34,31 @@ Example:
     </activity:object>
   </entry>`
 
+JSON Example:
+
+`{
+  items: [{
+    postTime: "2011-01-30T21:34:48Z",
+    verb: "post",
+    target: {
+      id: http://notizblog.org/feed/json,
+      permalinkUrl: http://notizblog.org/feed/json,
+      objectType: "blog",
+      displayName: "notizBlog"
+    },
+    object: {
+      id: http://notizblog.org/?p=322
+      displayName: "wsn?",
+      objectType: "article",
+      summary: "wasn?",
+      postTime: "January 30, 2011 19:01",
+      permalinkUrl: http://notizblog.org/?p=322
+    },
+    .
+    .
+    .
+  }]
+}`
 
 == Installation ==
 
@@ -43,6 +68,10 @@ Example:
 Thats it
 
 == Changelog ==
+
+= 0.6 =
+* added json feed
+* pubsubhubbub for json
 
 = 0.5 =
 * some OStatus compatibility fixes
