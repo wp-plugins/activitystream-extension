@@ -1,4 +1,7 @@
 <?php
+/**
+ * json template
+ */
 $output = array();
 while (have_posts()) {
   the_post();

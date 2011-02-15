@@ -4,7 +4,7 @@ Plugin Name: ActivityStream extension
 Plugin URI: http://wordpress.org/extend/plugins/activitystream-extension/
 Description: An extensions which adds the ActivityStream (<a href="http://www.activitystrea.ms">activitystrea.ms</a>) syntax to your Atom-Feed
 Author: Matthias Pfefferle
-Version: 0.6
+Version: 0.7
 Author URI: http://notizblog.org
 */
 
@@ -26,6 +26,9 @@ add_filter('pshb_feed_urls', array('ActivityExtension', 'publishToHub'));
 
 register_activation_hook(__FILE__, array('ActivityExtension', 'flushRewriteRules'));
 register_deactivation_hook(__FILE__, array('ActivityExtension', 'flushRewriteRules'));
+
+add_action('do_feed_atom', array('ActivityExtension', 'startAtomLinkTag'), 9); // run before output
+add_action('do_feed_atom', array('ActivityExtension', 'endAtomLinkTag'), 11); // run after output
 
 /**
  * ActivityStream Extension
@@ -53,7 +56,6 @@ class ActivityExtension {
    */
   function addActivityNamespace() {
     echo 'xmlns:activity="http://activitystrea.ms/spec/1.0/"'." \n";
-    //echo 'xmlns:service="http://activitystrea.ms/service-provider"'." \n";
     echo 'xmlns:media="http://purl.org/syndication/atommedia"'." \n";
     echo 'xmlns:poco="http://portablecontacts.net/spec/1.0"'." \n";
   }
@@ -95,6 +97,7 @@ class ActivityExtension {
       
       $gravatar = "http://www.gravatar.com/avatar/".md5(strtolower($user->user_email));
 ?>
+			<!-- Deprecation warning: activity:subject is present only for backward compatibility with old StatusNet installations, it will be removed in one of the next versions.-->
       <activity:subject>
         <activity:object-type>http://activitystrea.ms/schema/1.0/person</activity:object-type>
         <id><?php echo get_author_posts_url($user->ID, $user->user_nicename); ?></id>
@@ -107,6 +110,7 @@ class ActivityExtension {
         <poco:preferredUsername><?php echo $user->user_nicename; ?></poco:preferredUsername>
         <poco:displayName><?php echo $user->display_name; ?></poco:displayName>
       </activity:subject>
+      <!-- /Deprecation warning -->
 <?php
     }
   }
@@ -164,5 +168,40 @@ class ActivityExtension {
   function publishToHub($feeds) {
     $feeds[] = get_feed_link('json');
     return $feeds;
+  }
+
+  function startAtomLinkTag() {
+	  if (is_author()) {
+	    ob_start();
+    }
+  }
+
+  function endAtomLinkTag() {
+	  if (is_author()) {
+      if(get_query_var('author_name')) :
+        $user = get_user_by('slug', get_query_var('author_name'));
+      else :
+        $user = get_userdata(get_query_var('author'));
+      endif;
+
+      $gravatar = "http://www.gravatar.com/avatar/".md5(strtolower($user->user_email));
+
+			$feed = ob_get_clean();
+			$pattern = '/<\/author>/i';
+			$replacement = "<activity:object-type>http://activitystrea.ms/schema/1.0/person</activity:object-type>\n";
+			$replacement .= "<link rel='alternate' type='text/html' href='" . get_author_posts_url($user->ID, $user->user_nicename) . "' />\n";
+			$replacement .= "<link rel='avatar' type='image/jpeg' media:width='300' media:height='300' href='$gravatar?s=300' />\n";
+ 			$replacement .= "<link rel='avatar' type='image/jpeg' media:width='96' media:height='96' href='$gravatar?s=96'/>\n";
+  		$replacement .= "<link rel='avatar' type='image/jpeg' media:width='48' media:height='48' href='$gravatar?s=48'/>\n";
+ 			$replacement .= "<link rel='avatar' type='image/jpeg' media:width='24' media:height='24' href='$gravatar?s=24'/>\n";
+  		$replacement .= "<poco:preferredUsername>".$user->user_nicename."</poco:preferredUsername>\n";
+  		$replacement .= "<poco:displayName>".$user->display_name."</poco:displayName>\n";
+      if ($description = $user->user_description) {
+	      $replacement .= "<poco:note><![CDATA[$description]]></poco:note>\n";
+			}
+			$replacement .= "</author>\n";
+
+			echo preg_replace($pattern, $replacement, $feed, 1);
+	  }
   }
 }

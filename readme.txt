@@ -4,7 +4,7 @@ Donate link: http://notizblog.org
 Tags: Activities, Activity Stream, Feed, RSS, Atom, OStatus, OStatus Stack, JSON
 Requires at least: 2.5
 Tested up to: 3.1
-Stable tag: 0.6
+Stable tag: 0.7
 
 ActivityStrea.ms syntax for the WordPress (Atom and JSON)
 
@@ -68,6 +68,10 @@ JSON Example:
 Thats it
 
 == Changelog ==
+
+= 0.7 =
+* deprecated `<activity:subject>`
+* enriched Atom `<author />`
 
 = 0.6 =
 * added json feed
