@@ -6,7 +6,7 @@ Requires at least: 2.5
 Tested up to: 3.1
 Stable tag: 0.7
 
-ActivityStrea.ms syntax for the WordPress (Atom and JSON)
+ActivityStrea.ms syntax for WordPress (Atom and JSON)
 
 == Description ==
 
