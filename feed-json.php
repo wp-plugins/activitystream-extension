@@ -8,7 +8,7 @@ while (have_posts()) {
   $output['items'][] = array('postTime' => get_post_modified_time('Y-m-d\TH:i:s\Z', true),
                              'verb' => 'post',
                              'target' => array('id' => get_feed_link('json'),
-                                     'permalinkUrl' => get_feed_link('json'),
+                                     'url' => get_feed_link('json'),
                                      'objectType' => 'blog',
                                      'displayName' => get_bloginfo('name')
                              ),
@@ -17,12 +17,12 @@ while (have_posts()) {
                                      'objectType' => 'article',
                                      'summary' => get_the_excerpt(),
                                      'postTime' => get_the_time('F j, Y H:i'),
-                                     'permalinkUrl' => get_permalink()
+                                     'url' => get_permalink()
                               ),
                               'actor' => array('id' => get_author_posts_url(get_the_author_meta('id'), get_the_author_meta('nicename')),
                                      'displayName' => get_the_author(),
                                      'objectType' => 'person',
-                                     'permalinkUrl' => get_author_posts_url(get_the_author_meta('id'), get_the_author_meta('nicename')),
+                                     'url' => get_author_posts_url(get_the_author_meta('id'), get_the_author_meta('nicename')),
                                      'image' => array('width' => 80,
                                                       'height' => 80,
                                                       'url' => 'http://www.gravatar.com/avatar/'.md5( get_the_author_meta('email') ).'.jpg')
