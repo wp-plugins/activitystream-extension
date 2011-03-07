@@ -42,7 +42,7 @@ JSON Example:
     verb: "post",
     target: {
       id: http://notizblog.org/feed/json,
-      permalinkUrl: http://notizblog.org/feed/json,
+      url: http://notizblog.org/feed/json,
       objectType: "blog",
       displayName: "notizBlog"
     },
@@ -52,7 +52,7 @@ JSON Example:
       objectType: "article",
       summary: "wasn?",
       postTime: "January 30, 2011 19:01",
-      permalinkUrl: http://notizblog.org/?p=322
+      url: http://notizblog.org/?p=322
     },
     .
     .
