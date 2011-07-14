@@ -2,9 +2,9 @@
 Contributors: pfefferle
 Donate link: http://notizblog.org
 Tags: Activities, Activity Stream, Feed, RSS, Atom, OStatus, OStatus Stack, JSON
-Requires at least: 2.5
-Tested up to: 3.1
-Stable tag: 0.7.1
+Requires at least: 3.2
+Tested up to: 3.2.1
+Stable tag: 0.8
 
 ActivityStrea.ms syntax for WordPress (Atom and JSON)
 
@@ -26,7 +26,6 @@ Atom Example:
     <activity:verb>http://activitystrea.ms/schema/1.0/post</activity:verb>
 
     <activity:object>
-      <activity:object-type>http://activitystrea.ms/schema/1.0/blog-entry</activity:object-type>
       <activity:object-type>http://activitystrea.ms/schema/1.0/article</activity:object-type>
       <id>tag:notizblog.org,2009-07-13:/post/1775</id>
       <title type="html"><![CDATA[Matthias Pfefferle posted a new blog-entry]]></title>
@@ -38,7 +37,7 @@ JSON Example:
 
 `{
   items: [{
-    postTime: "2011-01-30T21:34:48Z",
+    published: "2011-01-30T21:34:48Z",
     verb: "post",
     target: {
       id: http://notizblog.org/feed/json,
@@ -51,7 +50,6 @@ JSON Example:
       displayName: "wsn?",
       objectType: "article",
       summary: "wasn?",
-      postTime: "January 30, 2011 19:01",
       url: http://notizblog.org/?p=322
     },
     .
@@ -68,6 +66,11 @@ JSON Example:
 Thats it
 
 == Changelog ==
+
+= 0.8 =
+* some JSON changes to match spec 1.0
+* changed the HTML discovery-links
+* added post_thumbnail support
 
 = 0.7.1 =
 * updated to new JSON-Activity changes

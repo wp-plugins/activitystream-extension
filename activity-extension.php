@@ -4,16 +4,15 @@ Plugin Name: ActivityStream extension
 Plugin URI: http://wordpress.org/extend/plugins/activitystream-extension/
 Description: An extensions which adds the ActivityStream (<a href="http://www.activitystrea.ms">activitystrea.ms</a>) syntax to your Atom-Feed
 Author: Matthias Pfefferle
-Version: 0.7
+Version: 0.8
 Author URI: http://notizblog.org
 */
 
 add_action('atom_ns', array('ActivityExtension', 'addActivityNamespace'));
 add_action('atom_entry', array('ActivityExtension', 'addActivityObject'));
-add_action('atom_head', array('ActivityExtension', 'addActivityProvider'));
+add_action('atom_author', array('ActivityExtension', 'addActivityAuthor')); // run before output
 add_action('comment_atom_ns', array('ActivityExtension', 'addActivityNamespace'));
 add_action('comment_atom_entry', array('ActivityExtension', 'addCommentActivityObject'));
-add_action('comments_atom_head', array('ActivityExtension', 'addActivityProvider'));
 add_action('wp_head', array('ActivityExtension', 'addHtmlHeader'), 5);
 add_filter('query_vars', array('ActivityExtension', 'queryVars'));
 
@@ -22,17 +21,16 @@ add_action('do_feed_json', array('ActivityExtension', 'doFeedJson'));
 add_action('init', array('ActivityExtension', 'init'));
 
 // push json feed
-add_filter('pshb_feed_urls', array('ActivityExtension', 'publishToHub'));
+//add_filter('pshb_feed_urls', array('ActivityExtension', 'publishToHub'));
 
 register_activation_hook(__FILE__, array('ActivityExtension', 'flushRewriteRules'));
 register_deactivation_hook(__FILE__, array('ActivityExtension', 'flushRewriteRules'));
 
-add_action('do_feed_atom', array('ActivityExtension', 'startAtomLinkTag'), 9); // run before output
-add_action('do_feed_atom', array('ActivityExtension', 'endAtomLinkTag'), 11); // run after output
+
 
 /**
  * ActivityStream Extension
- * 
+ *
  * @author Matthias Pfefferle
  */
 class ActivityExtension {
@@ -59,60 +57,41 @@ class ActivityExtension {
     echo 'xmlns:media="http://purl.org/syndication/atommedia"'." \n";
     echo 'xmlns:poco="http://portablecontacts.net/spec/1.0"'." \n";
   }
-  
+
   /**
    * echos autodiscovery links
    */
   function addHtmlHeader() {
-    echo '<link rel="activitystream" type="application/atom+xml" href="'.get_bloginfo('atom_url').'" class="activitystream" />'."\n";
-    echo '<link rel="activitystream" type="application/json" href="'.get_feed_link('json').'" class="activitystream" />'."\n"; 
+    echo '<link rel="activities" type="application/atom+xml" href="'.get_bloginfo('atom_url').'" />'."\n";
+    echo '<link rel="alternate activities" type="application/activitystream+json" href="'.get_feed_link('json').'" />'."\n";
   }
 
   /**
    * echos the activity verb and object for the wordpress entries
    */
   function addActivityObject() {
+    switch (get_post_type()) {
+      case "aside":
+      case "status":
+      case "quote":
+      case "note":
+        $post_type = "note";
+        break;
+      default:
+        $post_type = "article";
+        break;
+    }
 ?>
+
     <activity:verb>http://activitystrea.ms/schema/1.0/post</activity:verb>
     <activity:object>
-      <activity:object-type>http://activitystrea.ms/schema/1.0/article</activity:object-type>
+      <activity:object-type>http://activitystrea.ms/schema/1.0/<?php echo $post_type; ?></activity:object-type>
       <id><?php the_guid(); ?></id>
       <title type="<?php html_type_rss(); ?>"><![CDATA[<?php the_title(); ?>]]></title>
       <summary type="<?php html_type_rss(); ?>"><![CDATA[<?php the_excerpt_rss(); ?>]]></summary>
       <link rel="alternate" type="text/html" href="<?php the_permalink_rss() ?>" />
     </activity:object>
 <?php
-  }
-
-  /**
-   * echos the service provider
-   */
-  function addActivityProvider() {
-    if (is_author()) {
-      if(get_query_var('author_name')) :
-        $user = get_user_by('slug', get_query_var('author_name'));
-      else :
-        $user = get_userdata(get_query_var('author'));
-      endif;
-      
-      $gravatar = "http://www.gravatar.com/avatar/".md5(strtolower($user->user_email));
-?>
-			<!-- Deprecation warning: activity:subject is present only for backward compatibility with old StatusNet installations, it will be removed in one of the next versions.-->
-      <activity:subject>
-        <activity:object-type>http://activitystrea.ms/schema/1.0/person</activity:object-type>
-        <id><?php echo get_author_posts_url($user->ID, $user->user_nicename); ?></id>
-        <title><?php echo $user->display_name; ?>s stream</title>
-        <link rel="alternate" type="text/html" href="<?php echo get_author_posts_url($user->ID, $user->user_nicename); ?>"/>
-        <link rel="avatar" type="image/jpeg" media:width="300" media:height="300" href="<?php echo $gravatar ?>?s=300" />
-        <link rel="avatar" type="image/jpeg" media:width="96" media:height="96" href="<?php echo $gravatar ?>?s=96"/>
-        <link rel="avatar" type="image/jpeg" media:width="48" media:height="48" href="<?php echo $gravatar ?>?s=48"/>
-        <link rel="avatar" type="image/jpeg" media:width="24" media:height="24" href="<?php echo $gravatar ?>?s=24"/>
-        <poco:preferredUsername><?php echo $user->user_nicename; ?></poco:preferredUsername>
-        <poco:displayName><?php echo $user->display_name; ?></poco:displayName>
-      </activity:subject>
-      <!-- /Deprecation warning -->
-<?php
-    }
   }
 
   /**
@@ -137,7 +116,7 @@ class ActivityExtension {
     </activity:target>
 <?php
   }
-  
+
   /**
    * adds a json feed
    */
@@ -145,7 +124,7 @@ class ActivityExtension {
     // load template
     load_template(dirname(__FILE__) . '/feed-json.php');
   }
-  
+
   /**
    * Add 'callback' as a valid query variables.
    *
@@ -158,10 +137,10 @@ class ActivityExtension {
 
     return $vars;
   }
-  
+
   /**
    * adds the json feed to PubsubHubBub
-   * 
+   *
    * @param array $feeds
    * @return array
    */
@@ -170,13 +149,7 @@ class ActivityExtension {
     return $feeds;
   }
 
-  function startAtomLinkTag() {
-	  if (is_author()) {
-	    ob_start();
-    }
-  }
-
-  function endAtomLinkTag() {
+  function addActivityAuthor() {
 	  if (is_author()) {
       if(get_query_var('author_name')) :
         $user = get_user_by('slug', get_query_var('author_name'));
@@ -186,22 +159,19 @@ class ActivityExtension {
 
       $gravatar = "http://www.gravatar.com/avatar/".md5(strtolower($user->user_email));
 
-			$feed = ob_get_clean();
-			$pattern = '/<\/author>/i';
-			$replacement = "<activity:object-type>http://activitystrea.ms/schema/1.0/person</activity:object-type>\n";
-			$replacement .= "<link rel='alternate' type='text/html' href='" . get_author_posts_url($user->ID, $user->user_nicename) . "' />\n";
-			$replacement .= "<link rel='avatar' type='image/jpeg' media:width='300' media:height='300' href='$gravatar?s=300' />\n";
- 			$replacement .= "<link rel='avatar' type='image/jpeg' media:width='96' media:height='96' href='$gravatar?s=96'/>\n";
-  		$replacement .= "<link rel='avatar' type='image/jpeg' media:width='48' media:height='48' href='$gravatar?s=48'/>\n";
- 			$replacement .= "<link rel='avatar' type='image/jpeg' media:width='24' media:height='24' href='$gravatar?s=24'/>\n";
-  		$replacement .= "<poco:preferredUsername>".$user->user_nicename."</poco:preferredUsername>\n";
-  		$replacement .= "<poco:displayName>".$user->display_name."</poco:displayName>\n";
+      $author = "<activity:object-type>http://activitystrea.ms/schema/1.0/person</activity:object-type>\n";
+			$author .= "<link rel='alternate' type='text/html' href='" . get_author_posts_url($user->ID, $user->user_nicename) . "' />\n";
+			$author .= "<link rel='avatar' type='image/jpeg' media:width='300' media:height='300' href='$gravatar?s=300' />\n";
+ 			$author .= "<link rel='avatar' type='image/jpeg' media:width='96' media:height='96' href='$gravatar?s=96'/>\n";
+  		$author .= "<link rel='avatar' type='image/jpeg' media:width='48' media:height='48' href='$gravatar?s=48'/>\n";
+ 			$author .= "<link rel='avatar' type='image/jpeg' media:width='24' media:height='24' href='$gravatar?s=24'/>\n";
+  		$author .= "<poco:preferredUsername>".$user->user_nicename."</poco:preferredUsername>\n";
+  		$author .= "<poco:displayName>".$user->display_name."</poco:displayName>\n";
       if ($description = $user->user_description) {
-	      $replacement .= "<poco:note><![CDATA[$description]]></poco:note>\n";
+	      $author .= "<poco:note><![CDATA[$description]]></poco:note>\n";
 			}
-			$replacement .= "</author>\n";
 
-			echo preg_replace($pattern, $replacement, $feed, 1);
+			echo $author;
 	  }
   }
 }
